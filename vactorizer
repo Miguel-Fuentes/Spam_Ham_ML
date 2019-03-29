@@ -1,0 +1,21 @@
+import sklearn.datasets as skd
+from sklearn.feature_extraction.text import CountVectorizer
+
+#this will convert the input datasets into vector. 
+
+categories = ['spam','ham']
+news_train = skd.load_files('/Users/praveena/Documents/ML/HW2/hw2datasets/dataset1/train', categories= categories, encoding= 'ISO-8859-1')
+news_test = skd.load_files('/Users/praveena/Documents/ML/HW2/hw2datasets/dataset1/test',categories= categories, encoding= 'ISO-8859-1')
+
+text=["I am testing the spam and spam and ham and spam",
+     'this is the spam', 'this is the ham', 'this is not the only spam' ]
+
+# learn vocabulary
+
+x_vector= CountVectorizer()
+counts=x_vector.fit_transform(text)
+print(counts.toarray())
+print(x_vector.vocabulary_)
+print(x_vector.get_feature_names())
+
+#counts=vector.fit_transform(news_train.data)
