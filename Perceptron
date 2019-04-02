@@ -1,0 +1,110 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Mar 29 14:33:50 2019
+
+@author: praveena
+"""
+
+import sklearn.datasets as skd
+from sklearn.feature_extraction.text import CountVectorizer
+import numpy as np
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
+
+# learn vocabulary
+def learn_vocabulary(mails):
+    
+    x_vector= CountVectorizer()
+    countvectors=x_vector.fit_transform(mails.data)
+    #print( countvectors.toarray())
+    #print(x_vector.vocabulary_)
+    #print(x_vector.get_feature_names())
+    return  countvectors.toarray()
+
+def predict(inputs,weights):
+        sigma = np.dot(inputs, weights[1:]) + weights[0]
+        if sigma > 0:
+          result = 1
+        else:
+          result = 0            
+        return result
+
+
+    
+# 
+categories = ['spam','ham']
+mail_train = skd.load_files('/Users/praveena/Documents/ML/HW2/hw2datasets/dataset1/train', categories= categories, encoding= 'ISO-8859-1')
+mail_test = skd.load_files('/Users/praveena/Documents/ML/HW2/hw2datasets/dataset1/test',categories= categories, encoding= 'ISO-8859-1')
+
+
+mails_train_vector=learn_vocabulary(mail_train)
+
+# splitting the training data into 70 train 30 test
+x_Train,x_Test, y_Train, y_Test =train_test_split(mails_train_vector, mail_train.target,test_size=0.3)
+
+
+# initialize parameters
+
+hyper_parameter_lambda= 100
+learning_rate = 0.01
+weights = np.zeros(len(mails_train_vector[0]) + 1)
+
+
+#Training with 70 %  data
+print('initial weights ',weights)
+for i in range(hyper_parameter_lambda):
+    weights_prev = weights.copy()
+
+   
+    for mv,cat in zip(x_Train, y_Train):
+        #print(mv)
+        prediction = predict(mv,weights)
+        weights[1:] += learning_rate * (cat - prediction) * mv
+        weights[0] +=  learning_rate * (cat - prediction)
+    
+    if np.array_equal(weights, weights_prev):
+       print('weights converge at iteration ',i,weights)  
+       break
+    
+
+# iterations needed.
+
+hyper_parameter_lambda = i             
+
+# 30% data validation
+predicts = np.zeros(len(y_Test))
+
+for j in range(hyper_parameter_lambda):    
+    for mv,cat in zip(x_Test, y_Test):
+        prediction = predict(mv,weights)
+        predicts[j] = prediction
+        weights[1:] += learning_rate * (cat - prediction) * mv
+        weights[0] +=  learning_rate * (cat - prediction)
+    print("accuracy at iter :",j,accuracy_score( y_Test,predicts))
+#Testing
+
+
+print('weights after validating on 30% ',weights) 
+
+
+
+# train on the full training dataset  using hyper_parameter_lambda 
+predicts = np.zeros(len(mail_train.target))
+
+for k in range(hyper_parameter_lambda):    
+    for mv,cat in zip(mails_train_vector, mail_train.target):
+        prediction = predict(mv,weights)
+        predicts[k] = prediction
+        weights[1:] += learning_rate * (cat - prediction) * mv
+        weights[0] +=  learning_rate * (cat - prediction)
+    print("accuracy at iter :",k,accuracy_score( mail_train.target,predicts))
+
+print('weights after full training data',weights) 
+
+
+
+# test with the test dataset - yet to be done
+
+
+
