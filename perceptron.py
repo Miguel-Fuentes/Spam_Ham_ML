@@ -5,10 +5,12 @@ import re
 class Perceptron:
     
     def __init__(self):
-        self.weights = {'w0': 0.1}
+        self.weights = {'w0': 0.5}
         self.bias = 0.1
         self.trainingSet = {}
-        self.trainingSetVoocab = []
+        self.trainSet70 = {}
+        self.trainSet30 = {}
+        self.trainingSetVocab = []
         self.testSet = {}
         self.classes = ["ham", "spam"]
         self.epochs = 100
@@ -62,46 +64,93 @@ class Perceptron:
             return 1 # spam
         else:
             return 0 # ham
+    
+    def preTrain(self):
+                
+        lenTrain70= round(len(self.trainingSet.keys()) * 0.7) 
+        lenTrain30 = len(self.trainingSet.keys()) - lenTrain70
         
-    def train(self, trainDir):
-        self.getData(self.trainingSet, trainDir + "/spam", "spam")
-        self.getData(self.trainingSet, trainDir + "/ham", "ham")
+        trainingSetKeys = list(self.trainingSet.keys())
+        train70Keys = trainingSetKeys[-lenTrain70:]
+        train30Keys = trainingSetKeys[:lenTrain30]
+
+        for i in train70Keys:
+            self.trainSet70[i] = self.trainingSet[i] 
+            
+        for j in train30Keys:
+            self.trainSet30[j] = self.trainingSet[j]
         
-        self.trainingSetVocab = self.vocabSet(self.trainingSet)
+        
+    def train(self, trainSet, lr, epochs):
+        self.lr = lr
+        self.epochs = epochs
+          
+        #self.trainingSetVocab = self.vocabSet(self.trainingSet)
+        self.trainingSetVocab = self.vocabSet(trainSet)
         
         for i in self.trainingSetVocab:
             self.weights[i] = 0.0
         
         self.computeWeights(self.trainingSet, self.weights, self.lr, self.epochs)
         
-    def test(self, testDir):
-        self.getData(self.testSet, testDir + "/spam", "spam")
-        self.getData(self.testSet, testDir + "/ham", "ham")
+    def test(self, testSet):
+        #self.getData(self.testSet, testDir + "/spam", "spam")
+        #self.getData(self.testSet, testDir + "/ham", "ham")
         correctGuesses = 0
-        for i in self.testSet:
-            guess = self.classify(self.testSet[i], self.weights)
+        for i in testSet:
+            guess = self.classify(testSet[i], self.weights)
             if guess == 1:
-                self.testSet[i]['learnedClass'] = 'spam'
-                if self.testSet[i]['trueClass'] == self.testSet[i]['learnedClass']:
+                testSet[i]['learnedClass'] = 'spam'
+                if testSet[i]['trueClass'] == testSet[i]['learnedClass']:
                     correctGuesses += 1
             if guess == 0:
-                self.testSet[i]['learnedClass'] = 'ham'
-                if self.testSet[i]['trueClass'] == self.testSet[i]['learnedClass']:
+                testSet[i]['learnedClass'] = 'ham'
+                if testSet[i]['trueClass'] == testSet[i]['learnedClass']:
                     correctGuesses += 1
-                    
+        '''          
         print ("Learning constant: %.4f" % float(self.lr))
         print ("Number of iterations: %d" % int(self.epochs))
-        print ("Emails classified correctly: %d/%d" % (correctGuesses, len(self.testSet)))
-        print ("Accuracy: %.4f%%" % (float(correctGuesses) / float(len(self.testSet)) * 100.0))
+        print ("Emails classified correctly: %d/%d" % (correctGuesses, len(testSet)))
+        print ("Accuracy: %.4f%%" % (float(correctGuesses) / float(len(testSet)) * 100.0))
+        '''
+        #print ("Emails classified correctly: %d/%d" % (correctGuesses, len(testSet)))
+        return (float(correctGuesses) / float(len(testSet)) * 100.0)
 
         
 def main(trainDir, testDir):
+    lrs = [0.01, 0.03, 0.05, 0.1, 0.15]
+    epochs = [5, 10, 20, 50, 100]
+    maxAccuracy = 0
+    bestEpoch = 0
+    bestLr = 0
+    
     perceptron = Perceptron()
+    perceptron.getData(perceptron.trainingSet, trainDir + "/spam", "spam")
+    perceptron.getData(perceptron.trainingSet, trainDir + "/ham", "ham")
+    perceptron.getData(perceptron.testSet, testDir + "/spam", "spam")
+    perceptron.getData(perceptron.testSet, testDir + "/ham", "ham")
     
-    perceptron.train(trainDir)
+    print("Data initialized:")
+    print("Started training...")
     
-    perceptron.test(testDir)
-        
+    perceptron.preTrain()
+    for i in range(len(epochs)):
+        for j in range(len(lrs)):
+            perceptron.train(perceptron.trainSet70, lrs[i], epochs[j])
+            acc = perceptron.test(perceptron.trainSet30)
+            if acc > maxAccuracy:
+                maxAccuracy = acc
+                bestEpoch = epochs[j]
+                bestLr = lrs[i]
+                
+    print('Best Acc: ', maxAccuracy)
+    print('best Epoch: ', bestEpoch)
+    print('Best lr: ', bestLr)
+    
+    perceptron.train(perceptron.trainingSet, bestLr, bestEpoch*5)
+    acc = perceptron.test(perceptron.testSet)
+    print(acc)
+    
         
 if __name__ == '__main__':
-    main('dataset 3/train', 'dataset 3/test')
+    main('data/dataset 1/train', 'data/dataset 1/test')
