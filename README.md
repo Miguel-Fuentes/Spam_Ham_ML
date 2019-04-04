@@ -1,7 +1,7 @@
 # Spam_Ham_ML 
 
 > Run the following commands in the main project directory
-> Note that the filepaths all assume a windows operating system, if this is being run on a mac the slashes in the filepaths must be changed from "\\\" to "/"
+> Note that the filepaths all assume a windows operating system, if this is being run on a mac the slashes in the filepaths must be changed from "\\\\" to "/"
 
 ### Running All Tests
 > This will test all of the algorithms at once
