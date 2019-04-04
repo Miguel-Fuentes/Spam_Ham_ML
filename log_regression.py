@@ -1,4 +1,5 @@
 import numpy as np
+from math import log
 
 def logistic(z):
     '''

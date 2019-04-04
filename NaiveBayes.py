@@ -1,35 +1,24 @@
+# These libraries were not written by us
 import pandas as pd
-from collections import defaultdict, Counter, namedtuple
-from math import log
+import naive_bayes
 
-def accuracy(model, data):
-    correct = (data['class'] == model.predict(data['text'])).sum()
-    return correct / len(data)
+train1 = pd.read_pickle('data/dataset 1/train.pkl')
+test1 = pd.read_pickle('data/dataset 1/test.pkl')
 
-class NaiveBayes:
-    def __init__(self):
-        self.count_total_tuple = namedtuple('count_total_tuple',['counts','total'])
-        self.counts = {}    
-    
-    def train(self, data, classes):
-        for _class in classes:
-            all_words = ''.join(list(data[data['class'] == _class]['text'])).split()
-            word_counts = dict(Counter(all_words))
-            self.counts[_class] = self.count_total_tuple(defaultdict(int,word_counts),len(all_words))
-            
-    def classify(self, doc):
-        max_log_prod = float('-inf')
-        classification = None
-        for _class, count_tuple in self.counts.items():
-            words = doc.split()
-            word_counts = [count_tuple.counts[word] + 1 for word in words]
-            oov_words = word_counts.count(1)
-            log_freqs = [log(count/(len(count_tuple.counts) + oov_words + count_tuple.total)) for count in word_counts]
-            total = sum(log_freqs)
-            if total > max_log_prod:
-                max_log_prod = total
-                classification = _class
-        return classification
-    
-    def predict(self, doc_series):
-        return doc_series.apply(lambda x: self.classify(x))
+train2 = pd.read_pickle('data/dataset 2/train.pkl')
+test2 = pd.read_pickle('data/dataset 2/test.pkl')
+
+train3 = pd.read_pickle('data/dataset 3/train.pkl')
+test3 = pd.read_pickle('data/dataset 3/test.pkl')
+
+model1 = naive_bayes.NaiveBayes()
+model1.train(train1, ['spam', 'ham'])
+print(f'Accuracy on data set 1: {naive_bayes.accuracy(model1, test1)}')
+
+model2 = naive_bayes.NaiveBayes()
+model2.train(train2, ['spam', 'ham'])
+print(f'Accuracy on data set 2: {naive_bayes.accuracy(model2, test2)}')
+
+model3 = naive_bayes.NaiveBayes()
+model3.train(train1, ['spam', 'ham'])
+print(f'Accuracy on data set 3: {naive_bayes.accuracy(model3, test3)}')

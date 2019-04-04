@@ -34,7 +34,7 @@ class Perceptron:
             if os.path.isfile(dir_entry_path):
                 with open(dir_entry_path,encoding='utf8',errors='ignore') as f:
                     text = f.read()
-                    data.update({dir_entry_path: {'text': text, 'freqWords': bagOfWords(text), 'trueClass': trueClass}})
+                    data.update({dir_entry_path: {'text': text, 'freqWords': self.bagOfWords(text), 'trueClass': trueClass}})
     
         
     def vocabSet(self, dataSet):
@@ -208,7 +208,7 @@ def main(trainDir, testDir):
 
         
 if __name__ == '__main__':
-    print("DATASET 1---------------------------------")
+    print("\nDATASET 1---------------------------------")
     main('data/dataset 1/train', 'data/dataset 1/test')
     print("\nDATASET 2---------------------------------")
     main('data/dataset 2/train', 'data/dataset 2/test')
