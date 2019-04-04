@@ -2,14 +2,14 @@
 import pandas as pd
 import naive_bayes
 
-train1 = pd.read_pickle('data/dataset 1/train.pkl')
-test1 = pd.read_pickle('data/dataset 1/test.pkl')
+train1 = pd.read_pickle('data\\dataset 1\\train.pkl')
+test1 = pd.read_pickle('data\\dataset 1\\test.pkl')
 
-train2 = pd.read_pickle('data/dataset 2/train.pkl')
-test2 = pd.read_pickle('data/dataset 2/test.pkl')
+train2 = pd.read_pickle('data\\dataset 2\\train.pkl')
+test2 = pd.read_pickle('data\\dataset 2\\test.pkl')
 
-train3 = pd.read_pickle('data/dataset 3/train.pkl')
-test3 = pd.read_pickle('data/dataset 3/test.pkl')
+train3 = pd.read_pickle('data\\dataset 3\\train.pkl')
+test3 = pd.read_pickle('data\\dataset 3\\test.pkl')
 
 model1 = naive_bayes.NaiveBayes()
 model1.train(train1, ['spam', 'ham'])

@@ -209,8 +209,8 @@ def main(trainDir, testDir):
         
 if __name__ == '__main__':
     print("\nDATASET 1---------------------------------")
-    main('data/dataset 1/train', 'data/dataset 1/test')
+    main('data\\dataset 1\\train', 'data\\dataset 1\\test')
     print("\nDATASET 2---------------------------------")
-    main('data/dataset 2/train', 'data/dataset 2/test')
+    main('data\\dataset 2\\train', 'data\\dataset 2\\test')
     print("\nDATASET 3---------------------------------")
-    main('data/dataset 3/train', 'data/dataset 3/test')
+    main('data\\dataset 3\\train', 'data\\dataset 3\\test')

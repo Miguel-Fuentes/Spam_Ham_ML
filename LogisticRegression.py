@@ -7,14 +7,14 @@ import spam_ham_util
 
 DataSet = namedtuple('DataSet',['X_train', 'X_test', 'Y_train', 'Y_test'])
 
-train1 = pd.read_pickle('data/dataset 1/train.pkl')
-test1 = pd.read_pickle('data/dataset 1/test.pkl')
+train1 = pd.read_pickle('data\\dataset 1\\train.pkl')
+test1 = pd.read_pickle('data\\dataset 1\\test.pkl')
 
-train2 = pd.read_pickle('data/dataset 2/train.pkl')
-test2 = pd.read_pickle('data/dataset 2/test.pkl')
+train2 = pd.read_pickle('data\\dataset 2\\train.pkl')
+test2 = pd.read_pickle('data\\dataset 2\\test.pkl')
 
-train3 = pd.read_pickle('data/dataset 3/train.pkl')
-test3 = pd.read_pickle('data/dataset 3/test.pkl')
+train3 = pd.read_pickle('data\\dataset 3\\train.pkl')
+test3 = pd.read_pickle('data\\dataset 3\\test.pkl')
 
 dataset1 = DataSet(*spam_ham_util.df_to_numeric(train1, test1))
 dataset2 = DataSet(*spam_ham_util.df_to_numeric(train2, test2))
@@ -28,6 +28,8 @@ from sklearn.model_selection import train_test_split
 import log_regression
 
 ITERS, LEARNING_RATE = 100000, 0.01
+best_reg_val = None
+best_acc = 0
 
 for l2_reg in [0, 0.15, 0.3, 0.45, 0.6, 0.75]:
     accs = []
@@ -38,9 +40,13 @@ for l2_reg in [0, 0.15, 0.3, 0.45, 0.6, 0.75]:
         model.train(X_train, Y_train)
         
         accs.append(accuracy_score(model.predict(X_test), Y_test))
-    print(f'Average accuracy with l2_reg = {l2_reg} is: {sum(accs)/len(accs)}')
+    acc = sum(accs)/len(accs)
+    if acc > best_acc:
+        best_acc = acc
+        best_reg_val = l2_reg
+    print(f'Average accuracy with l2_reg = {l2_reg} is: {acc}')
 
-best_reg_val = 0.45
+print(f'----------------- Using l2_reg = {best_reg_val} -------------------------------')
 
 for index, dataset in enumerate([dataset1, dataset2, dataset3]):
     model = log_regression.log_regression(ITERS, best_reg_val, LEARNING_RATE)
